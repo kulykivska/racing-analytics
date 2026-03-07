@@ -1,13 +1,18 @@
 import Fastify from 'fastify';
+import cors from '@fastify/cors';
+import { registerRoutes } from './routes';
 
 const server = Fastify({ logger: true });
 
-server.get('/health', async (_request, _reply) => {
-  return { status: 'ok' };
-});
-
 const start = async () => {
   try {
+    // Enable CORS for frontend
+    await server.register(cors, {
+      origin: true, // Allow all origins in development
+    });
+    
+    await registerRoutes(server);
+    
     const port = Number(process.env.PORT) || 3000;
     await server.listen({ port, host: '0.0.0.0' });
   } catch (err) {
